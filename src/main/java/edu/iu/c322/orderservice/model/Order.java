@@ -1,45 +1,59 @@
 package edu.iu.c322.orderservice.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.Valid;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Objects;
-
+@Entity
 public class Order {
-    private int orderId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
     private int customerId;
     private float total;
+    private Date orderPlaced = null;
 
-    @Valid
-    private Address shippingAddress;
-
-    @Valid
-    private List<Item> items;
-    private Payment payment;
-
-    public int getOrderId() {
-        return orderId;
+    public Date getOrderPlaced() {
+        return orderPlaced;
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
+    public void setOrderPlaced(Date orderPlaced) {
+        this.orderPlaced = orderPlaced;
+    }
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
+    private Address shippingAddress;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Item> items;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
+
+    public void addOrderItem(Item item){
+        items.add(item);
+        item.setOrder(this);
+    }
+
+    public void removeOrderItem(Item item){
+        items.remove(item);
+        item.setOrder(null);
+    }
+
+    // getters and setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getCustomerId() {
         return customerId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Order order = (Order) o;
-        return orderId == order.orderId && customerId == order.customerId && Float.compare(order.total, total) == 0 && shippingAddress.equals(order.shippingAddress) && items.equals(order.items);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(orderId, customerId, total, shippingAddress, items);
     }
 
     public void setCustomerId(int customerId) {
@@ -68,5 +82,13 @@ public class Order {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
 }

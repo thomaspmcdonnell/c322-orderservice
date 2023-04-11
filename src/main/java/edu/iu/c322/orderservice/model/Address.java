@@ -1,15 +1,29 @@
 package edu.iu.c322.orderservice.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.util.Objects;
-
+@Entity
 public class Address {
-    @NotEmpty(message = "state cannot be empty.")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
     private String state;
-    @NotEmpty(message = "city cannot be empty.")
     private String city;
     private int postalCode;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getState() {
         return state;
@@ -33,18 +47,5 @@ public class Address {
 
     public void setPostalCode(int postalCode) {
         this.postalCode = postalCode;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Address address = (Address) o;
-        return postalCode == address.postalCode && state.equals(address.state) && city.equals(address.city);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(state, city, postalCode);
     }
 }
